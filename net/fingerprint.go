@@ -12,17 +12,17 @@ import (
 type Provider string
 
 const (
-	ProviderNone       Provider = "none"
-	ProviderCloudflare Provider = "cloudflare"
-	ProviderOVH        Provider = "ovh"
-	ProviderDDoSGuard  Provider = "ddos-guard"
-	ProviderArvanCloud Provider = "arvancloud"
+	ProviderNone         Provider = "none"
+	ProviderCloudflare   Provider = "cloudflare"
+	ProviderOVH          Provider = "ovh"
+	ProviderDDoSGuard    Provider = "ddos-guard"
+	ProviderArvanCloud   Provider = "arvancloud"
 	ProviderGoogleShield Provider = "google-shield"
-	ProviderAkamai     Provider = "akamai"
-	ProviderFastly     Provider = "fastly"
-	ProviderIncapsula  Provider = "incapsula"
-	ProviderNginx      Provider = "nginx"
-	ProviderApache     Provider = "apache"
+	ProviderAkamai       Provider = "akamai"
+	ProviderFastly       Provider = "fastly"
+	ProviderIncapsula    Provider = "incapsula"
+	ProviderNginx        Provider = "nginx"
+	ProviderApache       Provider = "apache"
 )
 
 // FingerprintResult holds the detected provider and the recommended method.
@@ -63,7 +63,7 @@ func Fingerprint(url string) FingerprintResult {
 		headers[strings.ToLower(k)] = strings.Join(v, ", ")
 	}
 
-	provider := detectProvider(headers, resp.StatusCode)
+	provider := detectProvider(headers)
 	method := recommendMethod(provider)
 
 	return FingerprintResult{
@@ -74,7 +74,7 @@ func Fingerprint(url string) FingerprintResult {
 	}
 }
 
-func detectProvider(h map[string]string, status int) Provider {
+func detectProvider(h map[string]string) Provider {
 	server := strings.ToLower(h["server"])
 	via := strings.ToLower(h["via"])
 	xPowered := strings.ToLower(h["x-powered-by"])

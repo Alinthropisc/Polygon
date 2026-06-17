@@ -10,8 +10,8 @@ import (
 // RateLimitedWorker wraps a WorkerFunc and throttles its iterations
 // using a TokenBucket. Use this to cap PPS without losing goroutines.
 type RateLimitedWorker struct {
-	fn      WorkerFunc
-	bucket  *utils.TokenBucket
+	fn     WorkerFunc
+	bucket *utils.TokenBucket
 }
 
 // NewRateLimitedWorker creates a worker that runs fn at most pps times per second.
@@ -38,7 +38,7 @@ func (r *RateLimitedWorker) Run(ctx context.Context) {
 // BandwidthGuard wraps an Engine and enforces a global bytes/sec cap
 // by pausing all workers when the rolling average exceeds the limit.
 type BandwidthGuard struct {
-	engine  *Engine
+	engine   *Engine
 	limitBps int64
 }
 

@@ -29,7 +29,7 @@ func (e *Engine) Spawn(ctx context.Context, n int, fn WorkerFunc) context.Cancel
 	e.mu.Lock()
 	e.workers = append(e.workers, cancel)
 	e.mu.Unlock()
-	for i := 0; i < n; i++ {
+	for range n {
 		go fn(child)
 	}
 	return cancel

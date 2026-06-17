@@ -14,12 +14,12 @@ func DNSQuery(domain string, qtype uint16) []byte {
 	hdr := make([]byte, 12)
 	binary.BigEndian.PutUint16(hdr[0:], id)
 	binary.BigEndian.PutUint16(hdr[2:], 0x0100) // standard query, recursion desired
-	binary.BigEndian.PutUint16(hdr[4:], 1)       // 1 question
+	binary.BigEndian.PutUint16(hdr[4:], 1)      // 1 question
 	// rest zero
 
 	// Question section: encoded domain
 	question := encodeDomain(domain)
-	question = append(question, 0x00)                    // root label
+	question = append(question, 0x00) // root label
 	qt := make([]byte, 4)
 	binary.BigEndian.PutUint16(qt[0:], qtype) // QTYPE
 	binary.BigEndian.PutUint16(qt[2:], 1)     // QCLASS IN

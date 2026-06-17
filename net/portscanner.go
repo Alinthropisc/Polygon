@@ -28,10 +28,8 @@ func ScanPorts(ctx context.Context, host string, ports []int, workers int, timeo
 	var results []ScanResult
 	var wg sync.WaitGroup
 
-	for i := 0; i < workers; i++ {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
+	for range workers {
+		wg.Go(func() {
 			for port := range work {
 				select {
 				case <-ctx.Done():
@@ -43,7 +41,7 @@ func ScanPorts(ctx context.Context, host string, ports []int, workers int, timeo
 				results = append(results, r)
 				mu.Unlock()
 			}
-		}()
+		})
 	}
 	wg.Wait()
 
@@ -70,7 +68,7 @@ func probePort(host string, port int, timeout time.Duration) ScanResult {
 
 	// Attempt banner grab (100ms read window)
 	banner := ""
-	conn.SetReadDeadline(time.Now().Add(100 * time.Millisecond))
+	_ = conn.SetReadDeadline(time.Now().Add(100 * time.Millisecond))
 	buf := make([]byte, 256)
 	n, _ := conn.Read(buf)
 	if n > 0 {

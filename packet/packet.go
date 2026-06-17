@@ -69,10 +69,10 @@ func BuildSYN(srcIP, dstIP net.IP, dstPort uint16) []byte {
 	binary.BigEndian.PutUint16(buf[22:], dstPort)
 	binary.BigEndian.PutUint32(buf[24:], rand.Uint32()) // seq
 	binary.BigEndian.PutUint32(buf[28:], 0)             // ack
-	buf[32] = 0x50                                       // data offset=5
-	buf[33] = 0x02                                       // SYN flag
-	binary.BigEndian.PutUint16(buf[34:], 65535)          // window
-	binary.BigEndian.PutUint16(buf[38:], 0)              // urgent
+	buf[32] = 0x50                                      // data offset=5
+	buf[33] = 0x02                                      // SYN flag
+	binary.BigEndian.PutUint16(buf[34:], 65535)         // window
+	binary.BigEndian.PutUint16(buf[38:], 0)             // urgent
 
 	cksum := tcpChecksum(srcIP.To4(), dstIP.To4(), buf[20:])
 	binary.BigEndian.PutUint16(buf[36:], cksum)

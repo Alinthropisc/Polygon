@@ -22,8 +22,8 @@ const (
 )
 
 type Proxy struct {
-	Host string
-	Port string
+	Host  string
+	Port  string
 	PType Type
 }
 
