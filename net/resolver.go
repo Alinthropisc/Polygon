@@ -54,8 +54,12 @@ func GetLocalIP() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	defer conn.Close()
-	return conn.LocalAddr().(*gonet.UDPAddr).IP.String(), nil
+	defer func() { _ = conn.Close() }()
+	udpAddr, ok := conn.LocalAddr().(*gonet.UDPAddr)
+	if !ok {
+		return "", nil
+	}
+	return udpAddr.IP.String(), nil
 }
 
 // IsPrivateIP returns true for RFC-1918 / loopback addresses.

@@ -292,7 +292,7 @@ func loadProxies(cfg *config.Config, proxyFile string, proxyType int, testURL st
 	fullPath := filepath.Join(dataDir(), "proxies", proxyFile)
 	if _, err := os.Stat(fullPath); os.IsNotExist(err) {
 		log.Println("Proxy file not found, downloading proxies...")
-		if err := os.MkdirAll(filepath.Dir(fullPath), 0755); err != nil {
+		if err := os.MkdirAll(filepath.Dir(fullPath), 0o755); err != nil {
 			log.Printf("Cannot create proxy dir: %v", err)
 		}
 		proxies := proxy.DownloadFromConfig(cfg, proxyType)
@@ -306,7 +306,7 @@ func loadProxies(cfg *config.Config, proxyFile string, proxyType int, testURL st
 		for _, p := range proxies {
 			sb.WriteString(p.String() + "\n")
 		}
-		if err := os.WriteFile(fullPath, []byte(sb.String()), 0644); err != nil {
+		if err := os.WriteFile(fullPath, []byte(sb.String()), 0o644); err != nil {
 			log.Printf("Cannot write proxy file: %v", err)
 		}
 		return proxies

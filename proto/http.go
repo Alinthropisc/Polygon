@@ -44,7 +44,7 @@ func (r *RequestBuilder) Body(b []byte) *RequestBuilder {
 	return r.Header("Content-Length", fmt.Sprintf("%d", len(b)))
 }
 
-// Build serialises the request to bytes ready to be sent over a raw socket.
+// Build serializes the request to bytes ready to be sent over a raw socket.
 func (r *RequestBuilder) Build() []byte {
 	var sb strings.Builder
 	sb.WriteString(r.method)

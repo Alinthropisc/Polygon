@@ -39,8 +39,12 @@ func LocalIP() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	defer conn.Close()
-	return conn.LocalAddr().(*net.UDPAddr).IP.String(), nil
+	defer func() { _ = conn.Close() }()
+	udpAddr, ok := conn.LocalAddr().(*net.UDPAddr)
+	if !ok {
+		return "", nil
+	}
+	return udpAddr.IP.String(), nil
 }
 
 // CheckRawSocket returns true if the process can open a raw TCP socket.

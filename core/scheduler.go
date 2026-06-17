@@ -27,7 +27,7 @@ func NewWaveScheduler(e *Engine, waves []WaveConfig) *WaveScheduler {
 	return &WaveScheduler{engine: e, waves: waves}
 }
 
-// Run executes all waves in order until ctx is cancelled.
+// Run executes all waves in order until ctx is canceled.
 func (ws *WaveScheduler) Run(ctx context.Context, fn WorkerFunc) {
 	for i, wave := range ws.waves {
 		select {

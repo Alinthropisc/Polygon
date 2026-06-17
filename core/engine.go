@@ -13,7 +13,7 @@ import (
 	"Polygon/tools"
 )
 
-// WorkerFunc is a function that runs until ctx is cancelled.
+// WorkerFunc is a function that runs until ctx is canceled.
 type WorkerFunc func(ctx context.Context)
 
 // Engine coordinates goroutine pools for flood attacks.

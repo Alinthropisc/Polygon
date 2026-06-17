@@ -76,7 +76,7 @@ func (hc *HealthChecker) Run(ctx context.Context) {
 func (hc *HealthChecker) IsDown() bool { return hc.last == StatusDown }
 
 func (hc *HealthChecker) probe() TargetStatus {
-	req, err := http.NewRequest("HEAD", hc.URL, http.NoBody)
+	req, err := http.NewRequestWithContext(context.Background(), "HEAD", hc.URL, http.NoBody)
 	if err != nil {
 		return StatusDown
 	}

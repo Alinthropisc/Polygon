@@ -48,7 +48,7 @@ func NewBandwidthGuard(e *Engine, limitBps int64) *BandwidthGuard {
 	return &BandwidthGuard{engine: e, limitBps: limitBps}
 }
 
-// Watch runs the guard loop until ctx is cancelled.
+// Watch runs the guard loop until ctx is canceled.
 func (bg *BandwidthGuard) Watch(ctx context.Context, bytesSentFn func() int64) {
 	ticker := time.NewTicker(time.Second)
 	defer ticker.Stop()

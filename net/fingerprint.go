@@ -2,6 +2,7 @@
 package net
 
 import (
+	"context"
 	"crypto/tls"
 	"net/http"
 	"strings"
@@ -46,7 +47,7 @@ var client = &http.Client{
 
 // Fingerprint probes url and returns the detected provider + recommended attack method.
 func Fingerprint(url string) FingerprintResult {
-	req, err := http.NewRequest("GET", url, http.NoBody)
+	req, err := http.NewRequestWithContext(context.Background(), "GET", url, http.NoBody)
 	if err != nil {
 		return FingerprintResult{Provider: ProviderNone}
 	}
@@ -106,7 +107,7 @@ func detectProvider(h map[string]string) Provider {
 }
 
 func recommendMethod(p Provider) string {
-	//nolint:exhaustive
+	//nolint:exhaustive // HTTP type handled by default case
 	switch p {
 	case ProviderCloudflare:
 		return "CFB"

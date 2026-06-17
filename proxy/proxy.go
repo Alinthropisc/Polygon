@@ -32,7 +32,7 @@ func (p Proxy) String() string {
 }
 
 func (p Proxy) Dialer() (func(network, addr string) (net.Conn, error), error) {
-	//nolint:exhaustive
+	//nolint:exhaustive // HTTP type handled by default case
 	switch p.PType {
 	case SOCKS5:
 		d, err := proxy.SOCKS5("tcp", p.String(), nil, proxy.Direct)
@@ -56,7 +56,7 @@ func (p Proxy) Dialer() (func(network, addr string) (net.Conn, error), error) {
 
 // HTTPTransport returns an *http.Transport routed through this proxy.
 func (p Proxy) HTTPTransport() *http.Transport {
-	//nolint:exhaustive
+	//nolint:exhaustive // HTTP type handled by default case
 	switch p.PType {
 	case SOCKS5:
 		d, err := proxy.SOCKS5("tcp", p.String(), nil, proxy.Direct)

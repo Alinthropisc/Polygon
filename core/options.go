@@ -43,7 +43,7 @@ func NewEngine(opts ...EngineOption) *Engine {
 }
 
 // RunLayer4 builds and runs a Layer 4 attack via the factory, respecting engine options.
-func RunLayer4(cfg Layer4Config, opts ...EngineOption) {
+func RunLayer4(cfg *Layer4Config, opts ...EngineOption) {
 	e := NewEngine(opts...)
 	factory := NewAttackFactory()
 	worker := factory.Layer4Worker(
@@ -71,7 +71,7 @@ func RunLayer4(cfg Layer4Config, opts ...EngineOption) {
 }
 
 // RunLayer7 builds and runs a Layer 7 attack via the factory, respecting engine options.
-func RunLayer7(cfg Layer7Config, opts ...EngineOption) {
+func RunLayer7(cfg *Layer7Config, opts ...EngineOption) {
 	e := NewEngine(opts...)
 	factory := NewAttackFactory()
 
