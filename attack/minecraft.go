@@ -1,6 +1,7 @@
 package attack
 
 import (
+	crand "crypto/rand"
 	"encoding/binary"
 	"fmt"
 	"math/rand"
@@ -37,12 +38,6 @@ func mcShort(n uint16) []byte {
 	return b
 }
 
-func mcLong(n int64) []byte {
-	b := make([]byte, 8)
-	binary.BigEndian.PutUint64(b, uint64(n))
-	return b
-}
-
 func mcHandshake(host string, port uint16, protocolID, state int) []byte {
 	return mcData(
 		varint(0x00),
@@ -53,7 +48,7 @@ func mcHandshake(host string, port uint16, protocolID, state int) []byte {
 	)
 }
 
-func mcHandshakeForwarded(host string, port uint16, protocolID, state int, fwdIP string, uuid string) []byte {
+func mcHandshakeForwarded(host string, port uint16, protocolID, state int, fwdIP, uuid string) []byte {
 	return mcData(
 		varint(0x00),
 		varint(protocolID),
@@ -72,7 +67,7 @@ func mcLogin(protocol int, username string) []byte {
 }
 
 func mcChat(protocol int, message string) []byte {
-	packetID := 0x02
+	var packetID int
 	switch {
 	case protocol >= 755:
 		packetID = 0x03
@@ -101,7 +96,7 @@ func randStr(n int) string {
 
 func randUUID() string {
 	b := make([]byte, 16)
-	rand.Read(b)
+	_, _ = crand.Read(b)
 	return fmt.Sprintf("%08x-%04x-%04x-%04x-%012x",
 		b[0:4], b[4:6], b[6:8], b[8:10], b[10:])
 }

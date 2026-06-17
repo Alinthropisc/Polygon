@@ -49,7 +49,7 @@ func (f *AttackFactory) Layer7Worker(
 	threadID int,
 ) WorkerFunc {
 	return func(ctx context.Context) {
-		flood := &attack.HttpFlood{
+		flood := &attack.HTTPFlood{
 			TargetURL:  targetURL,
 			Host:       host,
 			Method:     method,

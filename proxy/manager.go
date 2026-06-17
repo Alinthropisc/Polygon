@@ -2,6 +2,7 @@ package proxy
 
 import (
 	"bufio"
+	"context"
 	"fmt"
 	"io"
 	"log"
@@ -54,7 +55,11 @@ func DownloadFromConfig(cfg *config.Config, proxyType int) []Proxy {
 func downloadProvider(prov config.ProxyProvider) ([]Proxy, error) {
 	pt := Type(prov.Type)
 	client := &http.Client{Timeout: time.Duration(prov.Timeout) * time.Second}
-	resp, err := client.Get(prov.URL)
+	req, err := http.NewRequestWithContext(context.Background(), "GET", prov.URL, http.NoBody)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := client.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -83,7 +88,11 @@ func downloadProvider(prov config.ProxyProvider) ([]Proxy, error) {
 func Check(p Proxy, testURL string, timeout time.Duration) bool {
 	transport := p.HTTPTransport()
 	client := &http.Client{Transport: transport, Timeout: timeout}
-	resp, err := client.Get(testURL)
+	req, err := http.NewRequestWithContext(context.Background(), "GET", testURL, http.NoBody)
+	if err != nil {
+		return false
+	}
+	resp, err := client.Do(req)
 	if err != nil {
 		return false
 	}

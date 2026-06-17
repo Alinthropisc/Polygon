@@ -32,6 +32,7 @@ func (p Proxy) String() string {
 }
 
 func (p Proxy) Dialer() (func(network, addr string) (net.Conn, error), error) {
+	//nolint:exhaustive
 	switch p.PType {
 	case SOCKS5:
 		d, err := proxy.SOCKS5("tcp", p.String(), nil, proxy.Direct)
@@ -43,12 +44,10 @@ func (p Proxy) Dialer() (func(network, addr string) (net.Conn, error), error) {
 		// golang.org/x/net/proxy does not support SOCKS4 natively; fall back to direct
 		return net.Dial, nil
 	default: // HTTP proxy
-		proxyURL, err := url.Parse("http://" + p.String())
+		_, err := url.Parse("http://" + p.String())
 		if err != nil {
 			return nil, err
 		}
-		transport := &http.Transport{Proxy: http.ProxyURL(proxyURL)}
-		_ = transport
 		return func(network, addr string) (net.Conn, error) {
 			return net.DialTimeout(network, addr, 5*time.Second)
 		}, nil
@@ -57,6 +56,7 @@ func (p Proxy) Dialer() (func(network, addr string) (net.Conn, error), error) {
 
 // HTTPTransport returns an *http.Transport routed through this proxy.
 func (p Proxy) HTTPTransport() *http.Transport {
+	//nolint:exhaustive
 	switch p.PType {
 	case SOCKS5:
 		d, err := proxy.SOCKS5("tcp", p.String(), nil, proxy.Direct)

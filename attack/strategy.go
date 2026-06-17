@@ -41,36 +41,36 @@ func init() {
 	}
 }
 
-// l7Registry maps method name → bound method on *HttpFlood.
-var l7Registry map[string]func(*HttpFlood)
+// l7Registry maps method name → bound method on *HTTPFlood.
+var l7Registry map[string]func(*HTTPFlood)
 
 func init() {
-	l7Registry = map[string]func(*HttpFlood){
-		"GET":        (*HttpFlood).get,
-		"POST":       (*HttpFlood).post,
-		"HEAD":       (*HttpFlood).head,
-		"OVH":        (*HttpFlood).ovh,
-		"STRESS":     (*HttpFlood).stress,
-		"DYN":        (*HttpFlood).dyn,
-		"SLOW":       (*HttpFlood).slow,
-		"NULL":       (*HttpFlood).null,
-		"COOKIE":     (*HttpFlood).cookie,
-		"PPS":        (*HttpFlood).pps,
-		"EVEN":       (*HttpFlood).even,
-		"GSB":        (*HttpFlood).gsb,
-		"BOT":        (*HttpFlood).bot,
-		"APACHE":     (*HttpFlood).apache,
-		"XMLRPC":     (*HttpFlood).xmlrpc,
-		"CFB":        (*HttpFlood).bypass,
-		"CFBUAM":     (*HttpFlood).bypass,
-		"BYPASS":     (*HttpFlood).bypass,
-		"DGB":        (*HttpFlood).bypass,
-		"AVB":        (*HttpFlood).bypass,
-		"TOR":        (*HttpFlood).tor,
-		"RHEX":       (*HttpFlood).rhex,
-		"STOMP":      (*HttpFlood).stomp,
-		"DOWNLOADER": (*HttpFlood).downloader,
-		"KILLER":     (*HttpFlood).killer,
-		"BOMB":       (*HttpFlood).bypass,
+	l7Registry = map[string]func(*HTTPFlood){
+		"GET":        (*HTTPFlood).get,
+		"POST":       (*HTTPFlood).post,
+		"HEAD":       (*HTTPFlood).head,
+		"OVH":        (*HTTPFlood).ovh,
+		"STRESS":     (*HTTPFlood).stress,
+		"DYN":        (*HTTPFlood).dyn,
+		"SLOW":       (*HTTPFlood).slow,
+		"NULL":       (*HTTPFlood).null,
+		"COOKIE":     (*HTTPFlood).cookie,
+		"PPS":        (*HTTPFlood).pps,
+		"EVEN":       (*HTTPFlood).even,
+		"GSB":        (*HTTPFlood).gsb,
+		"BOT":        (*HTTPFlood).bot,
+		"APACHE":     (*HTTPFlood).apache,
+		"XMLRPC":     (*HTTPFlood).xmlrpc,
+		"CFB":        (*HTTPFlood).bypass,
+		"CFBUAM":     (*HTTPFlood).bypass,
+		"BYPASS":     (*HTTPFlood).bypass,
+		"DGB":        (*HTTPFlood).bypass,
+		"AVB":        (*HTTPFlood).bypass,
+		"TOR":        (*HTTPFlood).tor,
+		"RHEX":       (*HTTPFlood).rhex,
+		"STOMP":      (*HTTPFlood).stomp,
+		"DOWNLOADER": (*HTTPFlood).downloader,
+		"KILLER":     (*HTTPFlood).killer,
+		"BOMB":       (*HTTPFlood).bypass,
 	}
 }

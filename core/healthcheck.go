@@ -49,7 +49,7 @@ func NewHealthChecker(url string) *HealthChecker {
 	}
 }
 
-// Run starts polling until ctx is cancelled. Logs status transitions.
+// Run starts polling until ctx is canceled. Logs status transitions.
 func (hc *HealthChecker) Run(ctx context.Context) {
 	ticker := time.NewTicker(hc.Interval)
 	defer ticker.Stop()
@@ -76,7 +76,7 @@ func (hc *HealthChecker) Run(ctx context.Context) {
 func (hc *HealthChecker) IsDown() bool { return hc.last == StatusDown }
 
 func (hc *HealthChecker) probe() TargetStatus {
-	req, err := http.NewRequest("HEAD", hc.URL, nil)
+	req, err := http.NewRequest("HEAD", hc.URL, http.NoBody)
 	if err != nil {
 		return StatusDown
 	}

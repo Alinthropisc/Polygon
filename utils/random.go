@@ -47,12 +47,12 @@ func RandPort() uint16 {
 	return uint16(1024 + mrand.Intn(64511))
 }
 
-// RandInt returns a random integer in [min, max].
-func RandInt(min, max int) int {
-	if max <= min {
-		return min
+// RandInt returns a random integer in [lo, hi].
+func RandInt(lo, hi int) int {
+	if hi <= lo {
+		return lo
 	}
-	return min + mrand.Intn(max-min+1)
+	return lo + mrand.Intn(hi-lo+1)
 }
 
 // RandChoice returns a random element from slice s.

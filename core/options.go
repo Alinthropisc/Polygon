@@ -2,7 +2,6 @@ package core
 
 import (
 	"context"
-	"time"
 )
 
 // EngineOption is the Functional Options pattern for configuring an Engine.
@@ -97,6 +96,3 @@ func RunLayer7(cfg Layer7Config, opts ...EngineOption) {
 	}
 	statsLoop(ctx, cfg.TargetURL, cfg.Method, int(cfg.Duration.Seconds()))
 }
-
-// sleepUntil is a helper used by BandwidthGuard.
-func sleepUntil(d time.Duration) { time.Sleep(d) }

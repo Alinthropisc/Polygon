@@ -59,7 +59,7 @@ func MinecraftLogin(protocol int, username string) []byte {
 
 // MinecraftChat builds a chat message packet.
 func MinecraftChat(protocol int, message string) []byte {
-	id := 0x02
+	var id int
 	switch {
 	case protocol >= 755:
 		id = 0x03
