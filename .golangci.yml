@@ -1,0 +1,72 @@
+# .golangci.yml — golangci-lint configuration
+# Go equivalent of .clippy.toml (Rust) or .clangd (C++)
+# Run: golangci-lint run ./...
+
+run:
+  timeout: 5m
+  go: "1.23"
+  tests: true
+
+linters:
+  enable:
+    - errcheck       # missing error checks
+    - gosimple       # simplification suggestions
+    - govet          # go vet checks
+    - ineffassign    # unused variable assignments
+    - staticcheck    # advanced static analysis (SA, ST, QF rules)
+    - unused         # unused code
+    - gofmt          # formatting
+    - goimports      # import ordering
+    - misspell       # typos in comments/strings
+    - bodyclose      # http.Response.Body.Close() checks
+    - noctx          # http requests without context
+    - gocritic       # various best practices
+    - prealloc       # slice preallocation hints
+    - revive         # fast, configurable replacement for golint
+    - tparallel      # detects inappropriate use of t.Parallel()
+    - exhaustive     # checks exhaustiveness of enum switch statements
+
+linters-settings:
+  errcheck:
+    check-type-assertions: true
+    check-blank: false
+
+  govet:
+    enable-all: true
+    disable:
+      - fieldalignment  # not critical for this project
+
+  gofmt:
+    simplify: true
+
+  goimports:
+    local-prefixes: Polygon
+
+  misspell:
+    locale: US
+
+  revive:
+    rules:
+      - name: exported
+        severity: warning
+      - name: unused-parameter
+        severity: warning
+      - name: var-naming
+        severity: error
+
+  gocritic:
+    enabled-tags:
+      - diagnostic
+      - performance
+      - style
+
+issues:
+  exclude-rules:
+    # syscall raw socket calls generate many false positives
+    - path: internal/attack/layer4\.go
+      linters: [errcheck]
+    # test files are more lenient
+    - path: _test\.go
+      linters: [errcheck, gocritic]
+  max-issues-per-linter: 0
+  max-same-issues: 0

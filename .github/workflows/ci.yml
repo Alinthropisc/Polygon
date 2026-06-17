@@ -1,0 +1,104 @@
+name: CI
+
+on:
+  push:
+    branches: ["main", "dev"]
+  pull_request:
+    branches: ["main"]
+
+env:
+  GO_VERSION: "1.23"
+
+jobs:
+  build:
+    name: Build & Vet
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+
+      - name: Download dependencies
+        run: go mod download
+
+      - name: Verify go.mod/go.sum are tidy
+        run: |
+          go mod tidy
+          git diff --exit-code go.mod go.sum
+
+      - name: go vet
+        run: go vet ./...
+
+      - name: Check formatting (gofmt)
+        run: |
+          if [ -n "$(gofmt -l .)" ]; then
+            echo "Files need formatting:"
+            gofmt -l .
+            exit 1
+          fi
+
+      - name: Build binary
+        run: |
+          mkdir -p bin
+          go build -trimpath -ldflags="-s -w" -o bin/polygon ./cmd/polygon
+
+      - name: Upload binary artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: polygon-linux-amd64
+          path: bin/polygon
+          retention-days: 7
+
+  lint:
+    name: Lint (golangci-lint)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: latest
+          args: --timeout=5m
+
+  cross-compile:
+    name: Cross-compile
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - goos: linux
+            goarch: amd64
+          - goos: linux
+            goarch: arm64
+          - goos: windows
+            goarch: amd64
+          - goos: darwin
+            goarch: amd64
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+      - name: Build ${{ matrix.goos }}/${{ matrix.goarch }}
+        env:
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+        run: |
+          mkdir -p bin
+          EXT=""
+          [ "$GOOS" = "windows" ] && EXT=".exe"
+          go build -trimpath -ldflags="-s -w" \
+            -o bin/polygon-${{ matrix.goos }}-${{ matrix.goarch }}${EXT} \
+            ./cmd/polygon

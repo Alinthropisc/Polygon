@@ -1,0 +1,25 @@
+# Binaries
+bin/
+*.exe
+*.out
+
+# Go build cache
+*.test
+*.prof
+
+# Proxy lists (may contain sensitive data)
+files/proxies/
+
+# Editor
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Coverage
+coverage.out
+*.coverprofile

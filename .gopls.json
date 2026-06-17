@@ -1,0 +1,31 @@
+{
+  "gopls": {
+    "ui.semanticTokens": true,
+    "ui.documentation.hoverKind": "FullDocumentation",
+    "formatting.gofumpt": false,
+    "analyses": {
+      "shadow": true,
+      "unusedvariable": true,
+      "unusedparams": true,
+      "nilness": true,
+      "useany": true
+    },
+    "staticcheck": true,
+    "hints": {
+      "assignVariableTypes": true,
+      "compositeLiteralFields": true,
+      "constantValues": true,
+      "functionTypeParameters": true,
+      "parameterNames": true,
+      "rangeVariableTypes": true
+    },
+    "codelenses": {
+      "gc_details": false,
+      "generate": true,
+      "run_govulncheck": true,
+      "test": true,
+      "tidy": true,
+      "upgrade_dependency": true
+    }
+  }
+}
